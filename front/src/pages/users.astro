@@ -1,0 +1,68 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+interface User {
+  id: number;
+  nom: string;
+}
+---
+
+<Layout title="Users">
+  <main class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">Users</h1>
+    <div class="bg-white shadow-md rounded-lg overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >ID</th
+              >
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >Name</th
+              >
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200" id="usersTableBody">
+            <!-- Table content will be populated by JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<script>
+  interface User {
+    id: number;
+    nom: string;
+  }
+
+  async function fetchUsers() {
+    try {
+      const response = await fetch("http://localhost:8000/api/v1/users/");
+      const users: User[] = await response.json();
+
+      const tableBody = document.getElementById("usersTableBody");
+      if (!tableBody) return;
+
+      tableBody.innerHTML = users
+        .map(
+          (user) => `
+        <tr class="hover:bg-gray-50">
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${user.id}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${user.nom}</td>
+        </tr>
+      `
+        )
+        .join("");
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
+  }
+
+  // Fetch users when the page loads
+  fetchUsers();
+</script>
