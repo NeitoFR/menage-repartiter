@@ -25,10 +25,15 @@ kill: ## Stop the application
 build: ## Build the application
 	docker-compose -f ./ops/docker-compose.yml build
 
-.PHONY: exec front
+.PHONY: exec-front
 
-exec: ## Execute a shell in the front service
+exec-front: ## Execute a shell in the front service
 	docker-compose -f ./ops/docker-compose.yml exec front sh
+
+.PHONY: exec-back
+
+exec-back: ## Execute a shell in the back service
+	docker-compose -f ./ops/docker-compose.yml exec back sh
 
 .PHONY: help
 help:
