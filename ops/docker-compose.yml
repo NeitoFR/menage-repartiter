@@ -1,0 +1,16 @@
+services:
+  front:
+    container_name: front
+    hostname: front
+    build:
+      context: ../front
+      dockerfile: ./docker/Dockerfile.dev
+    # entrypoint: ["sh", "-c", "npm install && npm run dev"]
+    env_file:
+      - ../front/.env
+    volumes:
+      - ../front:/app
+    ports:
+      - "4321:4321"
+    stdin_open: true
+    tty: true

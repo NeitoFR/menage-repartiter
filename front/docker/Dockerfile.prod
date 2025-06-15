@@ -1,0 +1,40 @@
+# Stage 1: Build the React app
+FROM node:20-alpine AS build
+
+ARG PUBLIC_STRAPI_URL
+ARG STRAPI_API_TOKEN
+
+WORKDIR /app
+
+# Copy package.json and package-lock.json
+COPY ./front/package*.json ./
+
+# # Install dependencies
+RUN npm install
+
+# # Copy the rest of the application code
+COPY ./front/src /app/src
+COPY ./front/public /app/public
+COPY ./front/astro.config.mjs ./front/tailwind.config.mjs ./front/tsconfig.json /app/
+
+# Build the React app
+RUN npm run build
+
+# # Stage 2: Serve the React app with Nginx
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Copy package.json and package-lock.json to install production dependencies
+COPY --from=build /app/package*.json ./
+
+# Install only production dependencies
+RUN npm install --omit=dev
+
+COPY --from=build /app/dist /app/dist
+
+# Expose port 80
+EXPOSE 3000
+
+# Start Nginx server
+CMD ["sh", "-c", "HOST=0.0.0.0 PORT=3000 node /app/dist/server/entry.mjs"]
